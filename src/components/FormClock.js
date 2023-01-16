@@ -1,17 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Button from './generic/Button';
 import Input from './generic/Input';
+import ClockModel from './helperFunctions/ClockModel';
 
-export default function FormClock({ state, handleSubmit, handleChange }) {
+
+export default function FormClock({ onAddClock }) {
+  const [form, setForm] = useState({ cityName: '', timeZone: '' });
+
+  const handleChange = ({ target }) => {
+    const { name, value } = target;
+    setForm((prevForm) => ({ ...prevForm, [name]: value }));
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    const dataClock = new ClockModel(form.cityName, form.timeZone);
+    onAddClock(dataClock);
+
+    setForm({ cityName: '', timeZone: '' });
+  };
+
   return (
-    <form id='form' className='row form-city' onSubmit={handleSubmit}>
+    <form id='form' className='row form-city mt-4' onSubmit={handleSubmit}>
       <div className='col-4'>
         <label className='w-100' htmlFor='cityName'>
           Название
         </label>
         <Input
           type='text'
-          value={state.cityName}
+          value={form.cityName}
           onChange={handleChange}
           name='cityName'
           required
@@ -25,7 +43,9 @@ export default function FormClock({ state, handleSubmit, handleChange }) {
         <Input
           type='number'
           step='1'
-          value={state.timeZone}
+          min={-12}
+          max={14}
+          value={form.timeZone}
           onChange={handleChange}
           name='timeZone'
           required

@@ -1,79 +1,49 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
+import WidgetClock from './WidgetClock';
 import FormClock from './FormClock';
+import ClockModel from './helperFunctions/ClockModel';
+import List from './generic/List';
+import ListItem from './generic/ListItem';
 
-export class WorldClock extends Component {
-  constructor(props) {
-    super(props);
+function WorldClock() {
+  const [clocks, setClocks] = useState([
+    new ClockModel('Moscow', 3),
+    new ClockModel('Tokyo', 9),
+  ]);
 
-    this.state = {
-      cityName: '',
-      timeZone: '',
-    };
-
-    this.clocks = [];
-    // this.timerId = undefined;
-  }
-
-  handleChange = ({ target }) => {
-    const { name, value } = target;
-    this.setState((prevState) => ({ ...prevState, [name]: value }));
+  const handleClock = (clock) => {
+    const arrClocks = Array.from(clocks);
+    arrClocks.push(clock);
+    setClocks(arrClocks);
   };
 
-  handleSubmit = (event) => {
-    event.preventDefault();
-    console.log(this.state);
-    this.clocks.push({ cityName: this.state.cityName, timeZone: this.state.timeZone})
-    console.log(this.clocks);
-    this.setState({ cityName: '', timeZone: '',})
+  const hendleRemove = (id) => {
+    // clocks.filter((item) => item.id !== id);
+    setClocks((prevClocks) => prevClocks.filter((item) => item.id !== id));
   };
 
-  // componentDidMount() {}
+  return (
+    <>
+      <FormClock onAddClock={handleClock} />
 
-  // componentDidUpdate() {}
-
-  // componentWillUnmount() {}
-
-  render() {
-    return (
-      <>
-        <FormClock state={this.state} handleSubmit={this.handleSubmit} handleChange={this.handleChange} />
-
-        {/* <form id='form' className='row form-city' onSubmit={this.handleSubmit}>
-          <div className='col-4'>
-            <label className='w-100' htmlFor='cityName'>
-              Название
-            </label>
-            <Input
-              type='text'
-              value={this.state.cityName}
-              onChange={this.handleChange}
-              name='cityName'
-              required
-            />
-          </div>
-
-          <div className='col-4'>
-            <label className='w-100' htmlFor='timeZone'>
-              Временная зона
-            </label>
-            <Input
-              type='number'
-              step='1'
-              value={this.state.timeZone}
-              onChange={this.handleChange}
-              name='timeZone'
-              required
-            />
-          </div>
-
-          <Button className='btn btn-primary col-3'>Добавить</Button>
-        </form> */}
-
-        {this.clocks.length === 0 ? null : <div>clock</div>}
-      </>
-    );
-  }
+      {clocks.length !== 0 && (
+        <List className='row mt-5' items={clocks}>
+          {(items) =>
+            items.map((item) => (
+              <ListItem key={item.id} id={item.id} className='col-4'>
+                <WidgetClock
+                  id={item.id}
+                  cityName={item.cityName}
+                  timeZone={item.timeZone}
+                  hendleRemove={() => hendleRemove(item.id)}
+                />
+              </ListItem>
+            ))
+          }
+        </List>
+      )}
+    </>
+  );
 }
 
 export default WorldClock;
-/*создать список часов и отрисовывать Clock */
